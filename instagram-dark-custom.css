@@ -1,0 +1,1231 @@
+/* ==========================================================================
+ * Instagram Dark OLED Theme for SillyTavern 1.19.1+
+ * Design Reference : Figma Instagram UI Screens (Dark Theme 0:21 / 0:156 / 0:262 / 0:561 / 0:643)
+ * Locked Spec      : Pure #000000 Canvas + Borderless AI Stream + #262626 User Capsule
+ *                    Dialogue Quote #A58C73 + S2 (#3797EF Solid Circle Send Button)
+ *                    Typography 1A: Inter Variable + HarmonyOS Sans (woff2 unicode-range)
+ * ========================================================================== */
+
+@import url("https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.2.5/wght.css");
+@import url("https://cdn.jsdelivr.net/npm/@luzixu/harmonyos-sans@0.1.2/wght.css");
+
+/* --------------------------------------------------------------------------
+ * 1. 全局设计变量与字体栈 (Global Design Tokens & Font Locks)
+ * -------------------------------------------------------------------------- */
+:root {
+    --mainFontFamily: "Inter Variable", "HarmonyOS Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", system-ui, -apple-system, sans-serif;
+    --monoFontFamily: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+    /* Instagram Dark (Figma 0:21) 扩展设计语义 Token */
+    --ig-bg-canvas: #000000;
+    --ig-bg-chrome: #121212;
+    --ig-bg-subbar: #0A0A0A;
+    --ig-bg-elevated: #262626;
+    --ig-bg-card: #161618;
+    --ig-bg-input: #0A0A0C;
+    --ig-text-primary: #F9F9F9;
+    --ig-text-prose: #E2E2E6;
+    --ig-text-quote: #A58C73;
+    --ig-text-action: #9898A0;
+    --ig-text-muted: #8E8E93;
+    --ig-accent-blue: #3797EF;
+    --ig-accent-blue-hover: #4AA3F5;
+    --ig-accent-blue-active: #2684DC;
+    --ig-border-chrome: rgba(255, 255, 255, 0.14);
+    --ig-border-chip: rgba(255, 255, 255, 0.15);
+    --ig-border-input: rgba(255, 255, 255, 0.20);
+    --ig-border-pill: rgba(255, 255, 255, 0.38);
+    --ig-divider-subtle: rgba(60, 60, 67, 0.29);
+
+    /* 修正 #3797EF 蓝底复选框对勾为纯白 (#17 防坑点 4) */
+    --SmartThemeCheckboxTickColor: #FFFFFF !important;
+}
+
+html,
+body {
+    color-scheme: dark !important;
+    background-color: var(--ig-bg-canvas) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* 保护 FontAwesome 图标字体不被全局字体干扰 */
+.fa,
+.fas,
+.fa-solid {
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;
+    font-weight: 900;
+}
+
+.far,
+.fa-regular {
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", "FontAwesome" !important;
+}
+
+.fab,
+.fa-brands {
+    font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands", "FontAwesome" !important;
+    font-weight: 400;
+}
+
+/* 锁定代码块、正则脚本与自定义 CSS 编辑框为等宽字体 */
+code,
+pre,
+.mes_text code,
+.mes_text pre,
+#regex_container textarea,
+#customCSS,
+.monospace {
+    font-family: var(--monoFontFamily) !important;
+}
+
+/* 全局现代极细暗色滚动条 (消除默认 11px 亮灰滚动条眩光) */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+ * 2. 画布背景层与常驻双顶栏 (#bg1 / #top-bar / #extensionTopBar)
+ * -------------------------------------------------------------------------- */
+#bg1 {
+    background-color: var(--ig-bg-canvas);
+}
+
+/* 当用户未来启用非透明角色立绘壁纸时，自动叠加纯黑暗角渐晕保障白字锐利度 */
+#bg1:not([style*="__transparent.png"]):not([style*="none"])::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.62) 0%,
+        rgba(0, 0, 0, 0.86) 48%,
+        rgba(0, 0, 0, 0.95) 100%
+    );
+}
+
+#sheld {
+    background-color: transparent;
+}
+
+/* 主顶栏 (Figma 0:128 #121212 Chrome Surface) */
+body.no-blur #top-bar,
+#top-bar,
+#top-settings-holder {
+    background-color: var(--ig-bg-chrome) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+}
+
+#top-settings-holder .drawer-icon {
+    color: var(--ig-text-muted);
+    opacity: 1;
+    transition: color 0.15s ease, transform 0.12s ease;
+}
+
+#top-settings-holder .drawer-icon:hover {
+    color: #D4D4D8;
+}
+
+#top-settings-holder .drawer-icon.openIcon {
+    color: var(--ig-text-primary);
+    filter: drop-shadow(0 0 6px rgba(55, 151, 239, 0.35));
+}
+
+/* 顶部第二栏 Extension-TopInfoBar 常驻微阶梯融黑 (#0A0A0A，覆盖后加载扩展圆角与边框) */
+#extensionTopBar {
+    background-color: var(--ig-bg-subbar) !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 0 !important;
+    color: var(--ig-text-action);
+}
+
+#extensionConnectionProfiles {
+    background-color: var(--ig-bg-chrome) !important;
+    border: 1px solid var(--ig-border-chip) !important;
+    border-radius: 6px !important;
+    color: var(--ig-text-primary) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 3. 聊天阅读流：#000000 无框 AI 叙事 + #262626 玩家深灰胶囊 + Q1 排版语义
+ * -------------------------------------------------------------------------- */
+#chat {
+    background-color: var(--SmartThemeChatTintColor);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+#chat .mes {
+    background-color: transparent;
+    border-bottom: 1px solid var(--ig-divider-subtle);
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#chat .mes.last_mes {
+    border-bottom: none;
+}
+
+#chat .mes.selected {
+    background-color: rgba(55, 151, 239, 0.14);
+}
+
+/* 角色名与弱化元数据 (Figma 0:26 & 0:43) */
+.ch_name .name_text {
+    color: var(--ig-text-primary);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.mes .timestamp,
+.mes .mesIDDisplay,
+.mes .mes_timer,
+.mes .tokenCounterDisplay {
+    color: var(--ig-text-muted);
+    opacity: 0.72;
+    font-weight: 400;
+}
+
+.mesAvatarWrapper .avatar {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+
+/* 玩家发言深灰圆角胶囊 (#17 防坑点 2：适配 chat_display:0 扁平模式) */
+#chat .mes[is_user="true"] .mes_block {
+    background-color: var(--SmartThemeUserMesBlurTintColor); /* #262626 */
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+#chat .mes[is_user="true"] .mes_text {
+    color: #ECECEF;
+    padding-right: 0;
+    padding-bottom: 2px;
+}
+
+#chat .mes[is_user="true"] .mes_text q {
+    color: #BC9F82;
+}
+
+/* RP 正文排版与暖棕金台词分层 (清透柔白旁白 #E2E2E6 + 台词 #A58C73 + 动作 #9898A0；保护酒馆助手卡片) */
+.mes_text {
+    color: var(--ig-text-prose); /* #E2E2E6 清爽冷柔白 */
+    font-weight: 375;
+    line-height: 1.72;
+    letter-spacing: 0.015em;
+    line-break: strict;
+}
+
+.mes_text p {
+    margin-top: 0;
+    margin-bottom: 0.78em;
+}
+
+.mes_text p:last-child {
+    margin-bottom: 0;
+}
+
+/* 引号人物对话台词：#A58C73 温润拿铁棕金 + 420 字重 (SillyTavern 原生自动包裹中英文引号为 <q>) */
+.mes_text q {
+    color: var(--SmartThemeQuoteColor); /* #A58C73 */
+    font-weight: 420;
+    font-style: normal;
+}
+
+/* 带 *星号* 的动作与心理描写：#9898A0 中性冷灰 + 取消中文伪斜体 (豁免 fa 图标) */
+.mes_text em,
+.mes_text i:not([class*="fa-"]) {
+    color: var(--SmartThemeEmColor); /* #9898A0 */
+    font-style: normal;
+    font-weight: 375;
+}
+
+.mes_text strong,
+.mes_text b {
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.mes_text a {
+    color: var(--ig-accent-blue);
+    text-decoration: none;
+}
+
+.mes_text a:hover {
+    text-decoration: underline;
+}
+
+.mes_text blockquote {
+    border-left: 2px solid rgba(255, 255, 255, 0.22);
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #C7C7CC;
+    padding: 6px 12px;
+    margin: 8px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+/* 代码块与行内代码 */
+.mes_text pre {
+    background-color: var(--ig-bg-chrome);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #DCDCE2;
+    overflow-x: auto;
+}
+
+.mes_text :not(pre) > code {
+    background-color: #1C1C1F;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--ig-text-primary);
+}
+
+/* 思考链 <think> 折叠块静默降噪 */
+.mes_reasoning_details {
+    background-color: #0B0B0D;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 2px solid rgba(255, 255, 255, 0.20);
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin: 4px 0 8px 0;
+}
+
+.mes_reasoning_header {
+    color: var(--ig-text-muted);
+    font-size: 0.86em;
+    font-weight: 400;
+}
+
+.mes_reasoning {
+    color: var(--ig-text-muted);
+    font-size: 0.90em;
+    font-weight: 375;
+    line-height: 1.65;
+    padding-top: 4px;
+}
+
+/* 酒馆助手 / 前端卡片 Iframe 跨帧透明暗黑合成保护 (消除 Chromium color-scheme 跨帧白角漏底) */
+.mes_text iframe,
+.TH-render,
+.TH-render iframe {
+    background: transparent !important;
+    background-color: transparent !important;
+    color-scheme: dark !important;
+    border: none;
+}
+
+/* 消息内原生 <details> 折叠块 (兼容预设中的背景剧情/内心折叠标签) */
+.mes_text details:not(.mes_reasoning_details) {
+    background-color: #121214;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 6px 12px;
+    margin: 6px 0;
+}
+
+.mes_text details:not(.mes_reasoning_details) > summary {
+    color: var(--ig-text-primary);
+    font-size: 0.92em;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mes_text details:not(.mes_reasoning_details)[open] > summary {
+    margin-bottom: 6px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+ * 4. 底部输入区：Figma 0:573 Send Message 胶囊 + S2 实心蓝圆发送键 + QR 描边芯片
+ * -------------------------------------------------------------------------- */
+#form_sheld {
+    background-color: var(--ig-bg-canvas);
+}
+
+/* #17 防坑点 1：覆盖 toggle-dependent.css 中 body.no-blur #send_form !important */
+body.no-blur #send_form,
+#send_form {
+    background-color: var(--ig-bg-canvas) !important;
+    border: none !important;
+    border-top: 1px solid var(--ig-divider-subtle) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 4px 8px 6px 8px;
+}
+
+#nonQRFormItems {
+    align-items: center;
+    column-gap: 10px;
+    padding: 2px 2px;
+}
+
+#leftSendForm {
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+}
+
+#rightSendForm {
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+#leftSendForm #quickPersona img,
+#leftSendForm .avatar {
+    width: 30px;
+    height: 30px;
+    max-width: 30px;
+    max-height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* #17 防坑点 3：重置 clip-path 与 resize 手柄，防止胶囊圆弧与上沿细描边被破坏 */
+#send_textarea {
+    clip-path: none !important;
+    resize: none !important;
+    background-color: var(--ig-bg-canvas) !important;
+    border: 1px solid var(--ig-border-pill) !important;
+    border-radius: 22px !important;
+    color: #FFFFFF !important;
+    padding: 8px 14px !important;
+    min-height: 38px;
+    max-height: 32dvh;
+    line-height: 1.45;
+    box-shadow: none !important;
+    transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+
+#send_textarea::placeholder {
+    color: var(--ig-text-muted) !important;
+    opacity: 1;
+}
+
+#send_textarea:focus {
+    background-color: var(--ig-bg-chrome) !important;
+    border-color: var(--ig-accent-blue) !important;
+    outline: none !important;
+}
+
+/* 左侧与次级发送栏图标降噪 */
+#leftSendForm > div,
+#rightSendForm > div:not(#send_but):not(#mes_stop) {
+    color: var(--ig-text-muted);
+    opacity: 0.88;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+#leftSendForm > div:hover,
+#rightSendForm > div:not(#send_but):not(#mes_stop):hover {
+    color: var(--ig-text-primary);
+    opacity: 1;
+    filter: none;
+}
+
+/* S2 拍板方案：#3797EF Instagram 蓝实心正圆发送主按钮 (不干扰 .displayNone 显隐) */
+#rightSendForm #send_but {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50% !important;
+    background-color: var(--ig-accent-blue) !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+    font-size: 15px;
+    align-self: center;
+    box-shadow: 0 1px 5px rgba(55, 151, 239, 0.32);
+    transition: background-color 0.15s ease, transform 0.12s ease !important;
+}
+
+#rightSendForm #send_but:hover {
+    background-color: var(--ig-accent-blue-hover) !important;
+    filter: none !important;
+}
+
+#rightSendForm #send_but:active {
+    background-color: var(--ig-accent-blue-active) !important;
+    transform: scale(0.93);
+}
+
+/* 生成中停止按钮 (#mes_stop) 圆钮态 */
+#send_form #mes_stop {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 50% !important;
+    background-color: var(--ig-bg-elevated) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    color: var(--ig-text-primary) !important;
+    opacity: 1 !important;
+    place-content: center;
+    text-align: center;
+    line-height: 34px;
+    align-self: center;
+}
+
+#send_form #mes_stop:hover {
+    background-color: #333338 !important;
+}
+
+/* Quick Reply 快捷回复栏：Figma 0:268 (#000000 底 + 0.15 细白描边芯片) */
+#qr--bar {
+    opacity: 1 !important;
+    padding: 3px 2px 5px 2px;
+}
+
+#qr--bar > .qr--buttons .qr--button,
+#qr--popout > .qr--body > .qr--buttons .qr--button {
+    background-color: var(--ig-bg-canvas) !important;
+    border: 1px solid var(--ig-border-chip) !important;
+    border-radius: 7px !important;
+    color: var(--ig-text-primary) !important;
+    font-size: 12.5px;
+    font-weight: 500;
+    min-height: 28px;
+    padding: 3px 10px;
+    margin: 2px 0;
+    white-space: nowrap;
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+#qr--bar > .qr--buttons .qr--button:hover,
+#qr--bar > .qr--buttons .qr--button:active,
+#qr--popout > .qr--body > .qr--buttons .qr--button:hover {
+    background-color: var(--ig-bg-elevated) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 5. 抽屉、折叠卡片 L0-L4 边界体系与 PC 工作台表单 (Figma 0:156 / 0:643)
+ * -------------------------------------------------------------------------- */
+/* L0 外层抽屉与弹窗深邃底座 (#0D0D0F + 清晰 0.16 微光外框 + 立体悬浮阴影) */
+.drawer-content,
+#character_popup,
+#world_popup {
+    background-color: #0D0D0F !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.85) !important;
+    color: var(--ig-text-primary);
+}
+
+.popup,
+dialog.popup,
+#left-nav-panel,
+#right-nav-panel {
+    background-color: #0D0D0F !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    color: var(--ig-text-primary);
+}
+
+/* 扩展面板左右双栏间距拓宽 (告别原生 5px 紧贴) */
+.extensions_block {
+    gap: 12px !important;
+    padding: 2px !important;
+}
+
+/* L1 折叠卡片外框与嵌套子卡片 (.inline-drawer) */
+.inline-drawer {
+    background-color: #151518 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.inline-drawer .inline-drawer {
+    background-color: #0F0F12 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    margin: 8px 0 !important;
+}
+
+/* L2 折叠卡片表头 (彻底清除原生 348deg 灰白/棕黄高光渐变污渍) */
+.inline-drawer > .inline-drawer-header,
+#extensions_settings .inline-drawer > .inline-drawer-toggle.inline-drawer-header,
+#extensions_settings2 .inline-drawer > .inline-drawer-toggle.inline-drawer-header,
+.inline-drawer > .standoutHeader.inline-drawer-header {
+    background-image: none !important;
+    background-color: #1D1D21 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 9px 12px !important;
+    filter: none !important;
+    transition: background-color 0.15s ease;
+}
+
+.inline-drawer > .inline-drawer-header:hover,
+#extensions_settings .inline-drawer > .inline-drawer-toggle.inline-drawer-header:hover,
+#extensions_settings2 .inline-drawer > .inline-drawer-toggle.inline-drawer-header:hover,
+.inline-drawer > .standoutHeader.inline-drawer-header:hover {
+    background-color: #242429 !important;
+    filter: none !important;
+}
+
+/* 独立分区小横幅 (非 .inline-drawer 内部表头的 .standoutHeader / h4) */
+.standoutHeader:not(.inline-drawer-header),
+#user-settings-block h4:not(.inline-drawer-header) {
+    background-image: none !important;
+    background-color: #1B1B1F !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    filter: none !important;
+}
+
+/* L3 展开内容区呼吸留白与表头分割微线 */
+.inline-drawer > .inline-drawer-content {
+    background-color: #131316 !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box;
+}
+
+.standoutHeader:not(.inline-drawer-header) ~ .inline-drawer-content {
+    background-color: #131316 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    margin-top: 6px !important;
+    box-sizing: border-box;
+}
+
+/* 抽屉与面板内部清晰分割线 */
+.drawer-content hr,
+.inline-drawer-content hr,
+.popup hr {
+    background-image: none !important;
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    opacity: 1 !important;
+    height: 1px !important;
+    margin: 12px 0 !important;
+    border: 0 !important;
+}
+
+/* L4 正则脚本条目卡片、开关蓝与世界书条目边界 (覆盖后加载的 regex/style.css) */
+.regex_settings .flex-container {
+    gap: 6px;
+}
+
+#global_scripts_block,
+#preset_scripts_block,
+#scoped_scripts_block {
+    padding: 4px 0;
+}
+
+.regex-script-label {
+    background-color: #0A0A0D !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 8px !important;
+    padding: 7px 10px !important;
+    margin: 6px 0 !important;
+    align-items: center !important;
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.regex-script-label:hover {
+    background-color: #101014 !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.regex-toggle-on {
+    color: var(--ig-accent-blue) !important;
+}
+
+.world_entry {
+    background-color: #141417;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+}
+
+/* 表单输入框与下拉框 (Figma 0:169: 深底 + 0.20 细描边 + #3797EF 聚焦边) */
+input.text_pole,
+textarea.text_pole,
+select.text_pole,
+.drawer-content input[type="text"],
+.drawer-content input[type="number"],
+.drawer-content input[type="search"],
+.drawer-content textarea:not(#send_textarea),
+.drawer-content select,
+.popup input[type="text"],
+.popup input[type="number"],
+.popup input[type="search"],
+.popup textarea,
+.popup select,
+#world_popup input[type="text"],
+#world_popup input[type="number"],
+#world_popup textarea,
+#world_popup select {
+    background-color: var(--ig-bg-input);
+    border: 1px solid var(--ig-border-input);
+    border-radius: 6px;
+    color: #FFFFFF;
+    transition: border-color 0.15s ease;
+}
+
+input.text_pole:focus,
+textarea.text_pole:focus,
+select.text_pole:focus,
+.drawer-content input:focus,
+.drawer-content textarea:focus,
+.drawer-content select:focus,
+.popup input:focus,
+.popup textarea:focus,
+.popup select:focus,
+#world_popup input:focus,
+#world_popup textarea:focus,
+#world_popup select:focus {
+    border-color: var(--ig-accent-blue) !important;
+    outline: none;
+}
+
+input.text_pole::placeholder,
+textarea.text_pole::placeholder {
+    color: rgba(255, 255, 255, 0.50);
+}
+
+/* 次级按钮 (Figma 0:647 Message 描边按钮) 与主确认按钮 (#3797EF) */
+.menu_button {
+    background-color: var(--ig-bg-card);
+    border: 1px solid var(--ig-border-chip);
+    border-radius: 6px;
+    color: var(--ig-text-primary);
+    box-shadow: none;
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.menu_button:hover {
+    background-color: var(--ig-bg-elevated);
+    border-color: rgba(255, 255, 255, 0.28);
+    filter: none;
+}
+
+.popup-button-ok {
+    background-color: var(--ig-accent-blue) !important;
+    border-color: var(--ig-accent-blue) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+}
+
+.popup-button-ok:hover {
+    background-color: var(--ig-accent-blue-hover) !important;
+}
+
+/* 复选框、标签间距与采样滑块 (#3797EF Instagram 蓝高亮 + 纯白对勾 + 防大数字切边) */
+.checkbox_label {
+    gap: 6px;
+    align-items: center;
+}
+
+.checkbox_label input[type="checkbox"],
+label > input[type="checkbox"] {
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
+input[type="checkbox"] {
+    background-color: var(--ig-bg-chrome);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 4px;
+    outline: none;
+    box-shadow: none;
+    filter: none;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--ig-accent-blue) !important;
+    border-color: var(--ig-accent-blue) !important;
+}
+
+.neo-range-input,
+#left-nav-panel input[type="number"] {
+    min-width: 92px;
+    padding: 2px 6px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    box-sizing: border-box;
+    -moz-appearance: textfield;
+}
+
+.neo-range-input::-webkit-inner-spin-button,
+.neo-range-input::-webkit-outer-spin-button,
+#left-nav-panel input[type="number"]::-webkit-inner-spin-button,
+#left-nav-panel input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="range"],
+.neo-range-slider {
+    background: var(--ig-bg-elevated);
+    height: 4px;
+    border-radius: 999px;
+    box-shadow: none;
+    filter: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background: var(--ig-accent-blue);
+    border: 2px solid #FFFFFF;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+/* #17 防坑点 4：斜杠命令自动补全菜单实色防发虚 */
+.autoComplete_wrapper > ul,
+.autocomplete-list,
+body[data-stscript-style="theme"] .autoComplete_wrapper > ul {
+    background-color: var(--ig-bg-chrome) !important;
+    border: 1px solid var(--ig-border-chip) !important;
+    border-radius: 8px;
+}
+
+.autoComplete_wrapper > ul > li:hover,
+.autoComplete_wrapper > ul > li[aria-selected="true"],
+body[data-stscript-style="theme"] .autoComplete_wrapper > ul > li[aria-selected="true"] {
+    background-color: var(--ig-bg-elevated) !important;
+}
+
+/* 单分支空计数器全局隐藏 */
+#chat .mes .swipes-counter:empty {
+    display: none !important;
+}
+
+/* PC 桌面端专属消息与抽屉间距精修 (>1000px：拉开头像与胶囊间距、抽屉边缘留白，零影响移动端) */
+@media screen and (min-width: 1001px) {
+    .drawer-content:not(#left-nav-panel):not(#right-nav-panel),
+    #world_popup,
+    #character_popup {
+        padding: 12px 14px !important;
+    }
+
+    #chat .mes {
+        padding: 14px 16px;
+    }
+
+    #chat .mes[is_user="true"]:not(.smallSysMes) .mes_block {
+        margin-left: 12px;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    #chat .mes[is_user="true"]:is(.swipes_visible, .last_swipe) .mes_block {
+        margin-right: 36px;
+    }
+
+    #chat .mes .swipe_left {
+        left: 28px;
+    }
+
+    #chat .mes:not([is_user="true"]):not(.smallSysMes) .mes_block {
+        padding-left: 14px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+ * 6. 移动端专属沉浸 RP 优化层 (严格对齐 ST 真实断点 <=1000px / <=450px)
+ *    PC 端 (>1000px) 完全不受此层影响，100% 保留多栏并排与高密度工作台
+ * -------------------------------------------------------------------------- */
+@media screen and (max-width: 1000px) {
+    /* 释放 #chat 横向黄金阅读宽度：去除侧边框与 11px 固定滚动条槽 */
+    #chat {
+        border-left: none !important;
+        border-right: none !important;
+        scrollbar-width: none;
+        scrollbar-gutter: auto !important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #chat::-webkit-scrollbar {
+        display: none;
+        width: 0;
+    }
+
+    /* 消息块重构：父子定位安全解耦 — 微缩 .avatar 绝对置顶左上角，.mesAvatarWrapper 流式落位左下角承载 #楼层/耗时/Token */
+    #chat .mes:not(.smallSysMes) {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        position: relative;
+        padding: 12px 14px;
+    }
+
+    #chat .mes:not(.smallSysMes) > .mes_block {
+        order: 1;
+    }
+
+    /* 默认全关或全空时严格 0 高度、0 边距，覆盖 style.css:1415 .last_mes .mesAvatarWrapper 底部大留白 */
+    #chat .mes:not(.smallSysMes) > .mesAvatarWrapper {
+        position: static;
+        order: 2;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+        min-width: 0;
+        height: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0 !important;
+    }
+
+    /* 仅当至少存在 1 项「开关已开启 且 文本非空」的指标时，才赋予底部横条上间距 */
+    body:not(.no-mesIDDisplay) #chat .mes:not(.smallSysMes) > .mesAvatarWrapper:has(> .mesIDDisplay:not(:empty)),
+    body:not(.no-timer) #chat .mes:not(.smallSysMes) > .mesAvatarWrapper:has(> .mes_timer:not(:empty)),
+    body:not(.no-tokenCount) #chat .mes:not(.smallSysMes) > .mesAvatarWrapper:has(> .tokenCounterDisplay:not(:empty)) {
+        margin-top: 6px;
+    }
+
+    /* 将左上角微缩头像绝对定位直接挂载到子元素 .avatar 上 (以 .mes 为定位祖先，像素坐标 100% 零偏移) */
+    #chat .mes:not(.smallSysMes) > .mesAvatarWrapper > .avatar {
+        position: absolute;
+        top: 12px;
+        left: 14px;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        margin: 0;
+        z-index: 2;
+    }
+
+    #chat .mes:not(.smallSysMes) > .mesAvatarWrapper > .avatar img {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        object-fit: cover;
+    }
+
+    /* 左下角三项指标排版 (#楼层 / 耗时 / Token数；不加 display !important 以尊重原生开关类) */
+    #chat .mes:not(.smallSysMes) > .mesAvatarWrapper > :is(.mesIDDisplay, .mes_timer, .tokenCounterDisplay):empty {
+        display: none;
+    }
+
+    #chat .mes:not(.smallSysMes) > .mesAvatarWrapper > :is(.mesIDDisplay, .mes_timer, .tokenCounterDisplay) {
+        font-size: 11.5px;
+        line-height: 1.2;
+        font-weight: 400;
+        color: var(--ig-text-muted);
+        opacity: 0.78;
+        font-variant-numeric: tabular-nums;
+        text-align: left;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+
+    #chat .mes:not([is_user="true"]) .mes_block {
+        padding-left: 0 !important;
+        width: 100% !important;
+    }
+
+    #chat .mes:not(.smallSysMes):not([is_user="true"]) .ch_name {
+        padding-left: 36px;
+        min-height: 28px;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    /* 玩家胶囊消息移动端内边距保护、头像中心线精准对齐 (cy 误差 <= 1px) 与胶囊左下角指标对齐 */
+    #chat .mes[is_user="true"] .mes_block {
+        padding: 10px 14px !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    #chat .mes[is_user="true"]:not(.smallSysMes) > .mesAvatarWrapper > .avatar {
+        top: 26px;
+        left: 28px;
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+    }
+
+    #chat .mes[is_user="true"]:not(.smallSysMes) > .mesAvatarWrapper > .avatar img {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+    }
+
+    body:not(.no-mesIDDisplay) #chat .mes[is_user="true"]:not(.smallSysMes) > .mesAvatarWrapper:has(> .mesIDDisplay:not(:empty)),
+    body:not(.no-timer) #chat .mes[is_user="true"]:not(.smallSysMes) > .mesAvatarWrapper:has(> .mes_timer:not(:empty)),
+    body:not(.no-tokenCount) #chat .mes[is_user="true"]:not(.smallSysMes) > .mesAvatarWrapper:has(> .tokenCounterDisplay:not(:empty)) {
+        margin-top: 5px;
+        padding-left: 4px !important;
+    }
+
+    #chat .mes[is_user="true"]:not(.smallSysMes) .ch_name {
+        padding-left: 34px;
+        min-height: 28px;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    /* 清除右侧 30px 硬编码留白，赋予移动端 1.08 倍舒适字号与行高 */
+    #chat .mes .mes_text {
+        padding-right: 0 !important;
+        font-size: calc(var(--mainFontSize) * 1.08);
+        line-height: 1.75;
+    }
+
+    .mes_reasoning_details {
+        margin-right: 0;
+    }
+
+    .mes_reasoning_details .mes_reasoning_summary {
+        margin-right: 0;
+    }
+
+    /* 历史消息右上角操作按钮降噪防误触 */
+    #chat .mes:not(.last_mes) .mes_buttons {
+        opacity: 0.32;
+    }
+
+    #chat .mes .mes_buttons:hover,
+    #chat .mes .mes_buttons:focus-within {
+        opacity: 1;
+    }
+
+    #chat .mes .extraMesButtons {
+        background-color: #1C1C1F;
+        border: 1px solid var(--ig-border-chip);
+        border-radius: 14px;
+        padding: 3px 6px;
+        gap: 6px;
+    }
+
+    #chat .mes.last_mes .mes_buttons .mes_button {
+        min-width: 28px;
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    /* 最新消息底部 Swipe 胶囊化：仅在存在可见分支时预留 52px 底部空间，无分支消息零空洞 */
+    #chat .mes.last_mes:is(.swipes_visible, .last_swipe) {
+        padding-bottom: 52px !important;
+    }
+
+    /* 当带 Swipe 的 .last_mes 同时存在可见左下指标时：保持 position:static (保护 .avatar 定位祖先不偏移)，将指标精准嵌在 < (右缘 58px) 与 1/2 > 之间的 x=68px、垂直中心 bottom=26px 处，且总底高恒定 52px */
+    body:not(.no-mesIDDisplay) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes):has(> .mesAvatarWrapper > .mesIDDisplay:not(:empty)),
+    body:not(.no-timer) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes):has(> .mesAvatarWrapper > .mes_timer:not(:empty)),
+    body:not(.no-tokenCount) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes):has(> .mesAvatarWrapper > .tokenCounterDisplay:not(:empty)) {
+        padding-bottom: 9px !important;
+    }
+
+    body:not(.no-mesIDDisplay) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes) > .mesAvatarWrapper:has(> .mesIDDisplay:not(:empty)),
+    body:not(.no-timer) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes) > .mesAvatarWrapper:has(> .mes_timer:not(:empty)),
+    body:not(.no-tokenCount) #chat .mes.last_mes:is(.swipes_visible, .last_swipe):not(.smallSysMes) > .mesAvatarWrapper:has(> .tokenCounterDisplay:not(:empty)) {
+        height: 34px;
+        margin-top: 9px !important;
+        margin-left: 54px !important;
+        padding-left: 0 !important;
+        align-items: center;
+    }
+
+    #chat .mes.last_mes .swipe_left {
+        left: 14px;
+        bottom: 4px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 22px;
+        background-color: rgba(18, 18, 18, 0.92);
+        border: 1px solid var(--ig-border-chip);
+        color: var(--ig-text-primary);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.90;
+    }
+
+    #chat .mes.last_mes .swipeRightBlock {
+        right: 14px;
+        bottom: 4px;
+        flex-direction: row-reverse;
+        align-items: center;
+        gap: 6px !important;
+    }
+
+    #chat .mes.last_mes .swipe_right {
+        position: static;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 22px;
+        background-color: rgba(18, 18, 18, 0.92);
+        border: 1px solid var(--ig-border-chip);
+        color: var(--ig-text-primary);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.90;
+    }
+
+    #chat .mes.last_mes .swipes-counter {
+        background-color: rgba(18, 18, 18, 0.92);
+        border: 1px solid var(--ig-border-chip);
+        border-radius: 13px;
+        color: var(--ig-text-primary);
+        font-size: 12px;
+        font-weight: 500;
+        height: 28px;
+        min-width: 44px;
+        padding: 0 10px;
+        margin-bottom: 0;
+        align-items: center;
+        opacity: 0.92;
+    }
+
+    /* 单分支无计数文本时彻底隐藏空胶囊框，并清理非分支态隐形占位盒 */
+    #chat .mes .swipes-counter:empty,
+    #chat .mes.last_mes .swipes-counter:empty,
+    #chat .mes.last_mes:not(.swipes_visible):not(.last_swipe) .swipe_left,
+    #chat .mes.last_mes:not(.swipes_visible):not(.last_swipe) .swipeRightBlock:not(:has(.swipes-counter:not(:empty))) {
+        display: none !important;
+    }
+
+    /* Quick Reply 移动端强制单行丝滑横滑轨道 (零折行占用) */
+    #qr--bar,
+    #qr--bar.popoutVisible {
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px 4px 6px 4px !important;
+    }
+
+    #qr--bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    #qr--bar > .qr--buttons {
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        width: max-content !important;
+        gap: 6px !important;
+    }
+
+    #qr--bar > .qr--buttons .qr--button {
+        min-height: 30px;
+        min-width: 36px;
+        padding: 4px 11px;
+        margin: 0;
+    }
+
+    /* 底部输入栏紧凑对齐与安全区避让 */
+    body.no-blur #send_form,
+    #send_form {
+        padding: 4px 8px max(8px, env(safe-area-inset-bottom)) 8px !important;
+    }
+
+    #nonQRFormItems {
+        column-gap: 8px;
+    }
+
+    #leftSendForm {
+        flex-wrap: nowrap !important;
+        align-items: center;
+        gap: 2px;
+        padding-left: 0;
+    }
+
+    #leftSendForm > div {
+        width: 30px;
+        height: 34px;
+        font-size: 16px;
+    }
+
+    #leftSendForm #quickPersona img,
+    #leftSendForm .avatar {
+        width: 24px;
+        height: 24px;
+        max-width: 24px;
+        max-height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    #send_textarea {
+        font-size: 15px !important;
+        padding: 8px 13px !important;
+    }
+
+    /* 抽屉面板防滚动穿透、窄屏紧凑内边距与安全区底部留白 */
+    .drawer-content,
+    #character_popup,
+    #world_popup {
+        overscroll-behavior: contain;
+        padding: 10px 10px calc(20px + env(safe-area-inset-bottom)) 10px !important;
+    }
+
+    .inline-drawer > .inline-drawer-content,
+    .standoutHeader:not(.inline-drawer-header) ~ .inline-drawer-content {
+        padding: 10px !important;
+    }
+}
+
+/* 竖屏窄手机断点 (<=450px)：守护非 compact 意外状态下的左右按钮不折行崩坏 */
+@media screen and (max-width: 450px) {
+    #send_form #leftSendForm,
+    #send_form #rightSendForm {
+        width: auto;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+}
+
+/* iOS Safari 专属视口与底部 Home 横条避让修复 */
+@supports (-webkit-touch-callout: none) {
+    @media screen and (max-width: 1000px) {
+        body:not(.PWA) #send_form {
+            padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+        }
+    }
+}
