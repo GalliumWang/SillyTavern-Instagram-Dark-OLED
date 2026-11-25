@@ -671,23 +671,23 @@ dialog.popup,
     margin-bottom: 8px;
 }
 
-/* 表单输入框与下拉框 (Figma 0:169: 深底 + 0.20 细描边 + #3797EF 聚焦边) */
+/* 表单输入框与下拉框 (Figma 0:169: 深底 + 0.20 细描边 + #3797EF 聚焦边；豁免 Select2 内联搜索框) */
 input.text_pole,
 textarea.text_pole,
 select.text_pole,
-.drawer-content input[type="text"],
+.drawer-content input[type="text"]:not(.select2-search__field),
 .drawer-content input[type="number"],
-.drawer-content input[type="search"],
-.drawer-content textarea:not(#send_textarea),
+.drawer-content input[type="search"]:not(.select2-search__field),
+.drawer-content textarea:not(#send_textarea):not(.select2-search__field),
 .drawer-content select,
-.popup input[type="text"],
+.popup input[type="text"]:not(.select2-search__field),
 .popup input[type="number"],
-.popup input[type="search"],
-.popup textarea,
+.popup input[type="search"]:not(.select2-search__field),
+.popup textarea:not(.select2-search__field),
 .popup select,
-#world_popup input[type="text"],
+#world_popup input[type="text"]:not(.select2-search__field),
 #world_popup input[type="number"],
-#world_popup textarea,
+#world_popup textarea:not(.select2-search__field),
 #world_popup select {
     background-color: var(--ig-bg-input);
     border: 1px solid var(--ig-border-input);
@@ -696,17 +696,25 @@ select.text_pole,
     transition: border-color 0.15s ease;
 }
 
+select.text_pole option,
+.drawer-content select option,
+.popup select option,
+#world_popup select option {
+    background-color: #151518;
+    color: var(--ig-text-primary);
+}
+
 input.text_pole:focus,
 textarea.text_pole:focus,
 select.text_pole:focus,
-.drawer-content input:focus,
-.drawer-content textarea:focus,
+.drawer-content input:not(.select2-search__field):focus,
+.drawer-content textarea:not(.select2-search__field):focus,
 .drawer-content select:focus,
-.popup input:focus,
-.popup textarea:focus,
+.popup input:not(.select2-search__field):focus,
+.popup textarea:not(.select2-search__field):focus,
 .popup select:focus,
-#world_popup input:focus,
-#world_popup textarea:focus,
+#world_popup input:not(.select2-search__field):focus,
+#world_popup textarea:not(.select2-search__field):focus,
 #world_popup select:focus {
     border-color: var(--ig-accent-blue) !important;
     outline: none;
@@ -715,6 +723,250 @@ select.text_pole:focus,
 input.text_pole::placeholder,
 textarea.text_pole::placeholder {
     color: rgba(255, 255, 255, 0.50);
+}
+
+/* Select2 单选/多选组件与全局世界书顶栏 (#wiTopBlock) 统一精修：消除双重套框与汉字下沿裁切 */
+#wiTopBlock {
+    gap: 12px;
+}
+
+#wiTopBlock .range-block-title {
+    margin-bottom: 5px;
+}
+
+.select2-container .select2-selection--multiple {
+    position: relative;
+    background-color: var(--ig-bg-input) !important;
+    border: 1px solid var(--ig-border-input) !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    height: auto !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px 5px 8px !important;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.select2-container .select2-selection--multiple:has(.select2-selection__clear) {
+    padding-right: 28px !important;
+}
+
+.select2-container .select2-selection--single {
+    position: relative;
+    background-color: var(--ig-bg-input) !important;
+    border: 1px solid var(--ig-border-input) !important;
+    border-radius: 8px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    display: flex !important;
+    align-items: center;
+    padding: 0 28px 0 10px !important;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding: 0 !important;
+    line-height: 1.4 !important;
+    color: var(--ig-text-primary) !important;
+}
+
+.select2-container .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    top: 0 !important;
+    right: 6px !important;
+}
+
+.select2-container.select2-container--focus .select2-selection,
+.select2-container.select2-container--open .select2-selection,
+.select2-container .select2-selection:focus-within {
+    border-color: var(--ig-accent-blue) !important;
+    outline: none !important;
+}
+
+.select2-container .select2-selection--multiple ul.select2-selection__rendered {
+    display: contents !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.select2-container .select2-search--inline {
+    display: inline-flex !important;
+    align-items: center;
+    margin: 0 !important;
+    flex: 1 1 40px;
+    min-width: 24px;
+}
+
+.select2-container .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search--inline {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    line-height: 24px !important;
+    font-size: 13.5px !important;
+    color: var(--ig-text-primary) !important;
+    resize: none !important;
+    overflow: hidden !important;
+}
+
+.select2-container .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search--inline .select2-search__field {
+    width: 100% !important;
+}
+
+.select2-container .select2-search--inline .select2-search__field::placeholder {
+    color: var(--ig-text-muted) !important;
+    opacity: 1 !important;
+}
+
+.select2-container .select2-selection .select2-selection__clear {
+    position: absolute !important;
+    right: 7px !important;
+    top: 50% !important;
+    transform: translateY(-50%);
+    margin: 0 !important;
+    padding: 0 3px !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    color: var(--ig-text-muted) !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+}
+
+.select2-container .select2-selection .select2-selection__clear:hover {
+    color: var(--ig-text-primary) !important;
+}
+
+/* Select2 已选标签胶囊 (.select2-selection__choice) */
+.select2-container .select2-selection--multiple .select2-selection__choice {
+    display: inline-flex !important;
+    align-items: center;
+    position: relative;
+    margin: 0 !important;
+    padding: 2px 9px 2px 25px !important;
+    min-height: 26px;
+    background-color: #1E1E24 !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 6px !important;
+    color: var(--ig-text-primary) !important;
+    font-size: 12.5px !important;
+    line-height: 1.35 !important;
+    transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.select2-container .select2-selection--multiple .select2-selection__choice:hover {
+    background-color: #272730 !important;
+    border-color: rgba(55, 151, 239, 0.45) !important;
+}
+
+.select2_choice_clickable_buttonstyle + span.select2-container .select2-selection__choice__display,
+.select2-container .select2-selection--multiple .select2-selection__choice__display {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+span.select2.select2-container .select2-selection__choice__remove,
+.select2-container .select2-selection--multiple .select2-selection__choice__remove {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 20px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: none !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 5px 0 0 5px !important;
+    color: var(--ig-text-muted) !important;
+    transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+span.select2.select2-container .select2-selection__choice__remove:hover,
+.select2-container .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background-color: rgba(237, 73, 86, 0.22) !important;
+    color: #FF6B78 !important;
+}
+
+/* Select2 弹出下拉菜单与下拉搜索框 (.select2-dropdown) */
+.select2-dropdown {
+    background-color: #151518 !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85) !important;
+    overflow: hidden;
+}
+
+.select2-search--dropdown {
+    padding: 8px !important;
+}
+
+.select2-container .select2-search--dropdown .select2-search__field {
+    background-color: var(--ig-bg-input) !important;
+    border: 1px solid var(--ig-border-input) !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+    color: #FFFFFF !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.select2-container .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--ig-accent-blue) !important;
+}
+
+.select2-results .select2-results__option--selectable {
+    opacity: 0.92 !important;
+    color: var(--ig-text-prose) !important;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-right: 10px;
+}
+
+.select2-results__options[aria-multiselectable="true"] .select2-results__option--selectable {
+    padding-left: 30px !important;
+}
+
+.select2-results .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #26262B !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+}
+
+.select2-results__options:not([aria-multiselectable="true"]) .select2-results__option--selected {
+    background-color: rgba(55, 151, 239, 0.18) !important;
+    color: #FFFFFF !important;
+}
+
+.select2-results__option::before {
+    border-radius: 3px;
+    background-color: #0A0A0C;
+    border-color: rgba(255, 255, 255, 0.26);
+}
+
+.select2-results__option--selected.select2-results__option::before,
+.select2-results__option[aria-selected="true"]::before {
+    background-color: var(--ig-accent-blue) !important;
+    border-color: var(--ig-accent-blue) !important;
+    color: #FFFFFF !important;
 }
 
 /* 次级按钮 (Figma 0:647 Message 描边按钮) 与主确认按钮 (#3797EF) */
