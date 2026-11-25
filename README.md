@@ -53,7 +53,7 @@ SillyTavern 默认暗黑主题采用偏灰的半透明毛玻璃叠层，在手�
 - **Instagram DM 风格底部输入坞**：
   - Quick Reply 快捷回复栏（`#qr--bar`）强制收拢为**单行横向丝滑滑动描边芯片轨道**，不再折行挤占半屏聊天视野；
   - 输入框重塑为 `#000000` 纯黑圆角胶囊（`22px` 圆角，聚焦平滑过渡至 `#121212` 底 + `#3797EF` 蓝框，字号锁定 `15px+` 防止移动端无故缩放），右侧搭配 `#3797EF` 实心正圆发送键；
-  - 完整适配全面屏与 iOS Safari 底部 Home 横条安全区（`env(safe-area-inset-bottom)`），抽屉开启时锁定 `overscroll-behavior: contain` 防止背景滚动穿透。
+  - 完整适配全面屏与 iOS Safari 底部 Home 横条安全区（`env(safe-area-inset-bottom)`），顶层抽屉开启时锁定 `overscroll-behavior: contain` 防止背景滚动穿透；同时针对嵌套在 `#WorldInfo` 内的世界书面板（`#world_popup`）专门解除内层滚动链死锁与多余套娃边框，确保手机端世界书长列表上下触控丝滑滚动且右侧条目操作按钮完整露出。
 
 #### PC 桌面端生产力保护（`@media screen and (min-width: 1001px)`）
 

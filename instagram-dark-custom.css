@@ -1197,12 +1197,64 @@ body[data-stscript-style="theme"] .autoComplete_wrapper > ul > li[aria-selected=
         padding: 8px 13px !important;
     }
 
-    /* 抽屉面板防滚动穿透、窄屏紧凑内边距与安全区底部留白 */
+    /* 抽屉面板防滚动穿透、窄屏紧凑内边距与安全区底部留白 (#world_popup 单独解耦防嵌套滚动死锁) */
     .drawer-content,
-    #character_popup,
-    #world_popup {
+    #character_popup {
         overscroll-behavior: contain;
         padding: 10px 10px calc(20px + env(safe-area-inset-bottom)) 10px !important;
+    }
+
+    #WorldInfo.drawer-content {
+        padding: 8px 8px calc(24px + env(safe-area-inset-bottom)) 8px !important;
+    }
+
+    /* #world_popup 嵌套于 #WorldInfo.drawer-content 内部：解除 overscroll-behavior: contain 与内层嵌套滚动盒，
+     * 统一交由外层 #WorldInfo 全屏丝滑触控滚动（同时兼容 Android Chromium 与 iOS WebKit），并去除冗余外框 */
+    #world_popup {
+        overscroll-behavior: auto !important;
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        margin-top: 0 !important;
+        padding: 4px 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+
+    /* 移动端世界书条目去重框减负：消除 .world_entry 与 .world_entry_form 外层套娃框及双倍内边距，
+     * 仅保留内层 .inline-drawer 单层清晰卡片，释放 60px+ 横向宽度确保右侧移动/删除图标 100% 完整露出 */
+    #world_popup .world_entry {
+        padding: 0 !important;
+        margin-bottom: 8px !important;
+        border: none !important;
+        background-color: transparent !important;
+    }
+
+    #world_popup .world_entry_form {
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background-color: transparent !important;
+    }
+
+    #world_popup .world_entry .inline-drawer {
+        margin-bottom: 0 !important;
+    }
+
+    #world_popup .world_entry .inline-drawer > .inline-drawer-header {
+        padding: 8px 8px !important;
+    }
+
+    #world_popup .world_entry .inline-drawer > .inline-drawer-content {
+        padding: 8px !important;
+    }
+
+    #world_popup .world_entry select,
+    #world_popup .world_entry input.text_pole {
+        max-width: 100%;
+        min-width: 0;
     }
 
     .inline-drawer > .inline-drawer-content,
@@ -1221,11 +1273,19 @@ body[data-stscript-style="theme"] .autoComplete_wrapper > ul > li[aria-selected=
     }
 }
 
-/* iOS Safari 专属视口与底部 Home 横条避让修复 */
+/* iOS Safari 专属视口、底部 Home 横条避让与世界书嵌套滚动兼容修复 */
 @supports (-webkit-touch-callout: none) {
     @media screen and (max-width: 1000px) {
         body:not(.PWA) #send_form {
             padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+        }
+
+        #world_popup {
+            overscroll-behavior: auto !important;
+            overflow-y: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            margin-top: 0 !important;
         }
     }
 }
